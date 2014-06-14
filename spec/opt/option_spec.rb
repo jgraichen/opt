@@ -50,6 +50,26 @@ describe Opt::Option do
       expect(described_class.parse_nargs('12')).to eq 12..12
     end
 
+    it 'should parse special infinity string' do
+      expect(described_class.parse_nargs('*')).to eq 0..Float::INFINITY
+    end
+
+    it 'should parse special infinity symbol (I)' do
+      expect(described_class.parse_nargs(:inf)).to eq 0..Float::INFINITY
+    end
+
+    it 'should parse special infinity symbol (II)' do
+      expect(described_class.parse_nargs(:infinity)).to eq 0..Float::INFINITY
+    end
+
+    it 'should parse array (I)' do
+      expect(described_class.parse_nargs([3, :inf])).to eq 3..Float::INFINITY
+    end
+
+    it 'should parse array (II)' do
+      expect(described_class.parse_nargs([3, 100])).to eq 3..100
+    end
+
     it 'should reject invalid string' do
       expect do
         described_class.parse_nargs('a12')

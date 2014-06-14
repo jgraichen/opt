@@ -113,30 +113,69 @@ module Opt
           end
         else
           # raise Opt::MissingArgument
-          raise "ArgumentError: wrong number of arguments (#{args.size} for #{nargs})"
+          raise "wrong number of arguments (#{args.size} for #{nargs})"
         end
       end
     end
 
     class << self
       def parse_nargs(num)
-        unless num.is_a?(Range)
-          return parse_nargs(Range.new(Integer(num), Integer(num)))
-        end
-
-        if num.first > num.last
-          if num.exclude_end?
-            num = Range.new(num.last + 1, num.first)
+        case num
+          when Range
+            parse_nargs_range(num)
+          when Array
+            parse_nargs_array(num)
           else
-            num = Range.new(num.last, num.first)
+            parse_nargs_obj(num)
+        end
+      end
+
+      def parse_nargs_obj(obj)
+        case obj.to_s.downcase
+          when '+'
+            1..Float::INFINITY
+          when '*', 'inf', 'infinity'
+            0..Float::INFINITY
+          else
+            i = Integer(obj.to_s)
+            parse_nargs_range i..i
+        end
+      end
+
+      def parse_nargs_range(range)
+        if range.first > range.last
+          if range.exclude_end?
+            range = Range.new(range.last + 1, range.first)
+          else
+            range = Range.new(range.last, range.first)
           end
         end
 
-        if num.first < 0
+        if range.first < 0
           raise RuntimeError.new 'Argument number must not be less than zero.'
         end
 
-        num
+        range
+      end
+
+      def parse_nargs_array(obj)
+        if obj.size == 2
+          parse_nargs_range Range.new(parse_nargs_array_obj(obj[0]),
+                                      parse_nargs_array_obj(obj[1]))
+        else
+
+          raise ArgumentError.new \
+            'Argument number array count must be exactly two.'
+        end
+      end
+
+      def parse_nargs_array_obj(obj)
+        case obj.to_s.downcase
+          when '*', 'inf', 'infinity'
+            Float::INFINITY
+          else
+            Integer(obj.to_s)
+        end
       end
     end
   end
