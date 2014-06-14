@@ -92,6 +92,10 @@ module Opt
         type == :text
       end
 
+      def short?
+        type == :short
+      end
+
       def to_s
         case type
           when :long

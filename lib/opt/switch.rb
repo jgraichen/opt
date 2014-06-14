@@ -92,7 +92,7 @@ module Opt
     def match?(argv)
       case (arg = argv.first).type
         when :long
-          long? && arg.value == name
+          long? && arg.value.split('=')[0] == name
         when :short
           short? && arg.value[0] == name[0]
         else
@@ -106,7 +106,11 @@ module Opt
       if short? && argv.first.value.size > 1
         argv.first.value.slice!(0, 1)
       else
-        argv.shift
+        arg = argv.shift
+
+        if arg.value.include?('=')
+          argv.unshift Command::Token.new(:text, arg.value.split('=', 2)[1])
+        end
       end
 
       true

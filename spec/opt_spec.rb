@@ -3,35 +3,58 @@ require 'spec_helper'
 describe Opt do
   let(:opt) { Opt.new }
 
-  it 'should parse arguments (I)' do
-    opt = Opt.new
-    opt.option '--help, -h'
+  it 'should parse options (I)' do
+    opt.option '--help, -h', value: :yes
 
     result = opt.parse %w(-h)
-    expect(result.help).to be true
+    expect(result.help).to eq :yes
   end
 
   it 'should detect double-dash' do
-    opt = Opt.new
     opt.option '-v', name: :version
     opt.option 'rest', nargs: (0..Float::INFINITY)
 
     result = opt.parse %w(-v -- -h)
-    expect(result.version?).to eq true
+    expect(result.version?).to be true
     expect(result.rest).to eq %w(-h)
   end
 
-  it 'should parse arguments (II)' do
-    opt = Opt.new
-    opt.option '--help'
+  it 'should parse options (II)' do
+    opt.option '--help', default: :no
     opt.option '--version'
 
     result = opt.parse %w(--version)
-    expect(result.version).to be true
-    expect(result.help).to be false
+    expect(result.version).to eql true
+    expect(result.help).to eql :no
   end
 
-  it 'should parse arguments (III)' do
+  it 'should parse options with argument' do
+    opt.option '--level, -l', nargs: 1
+
+    result = opt.parse %w(--level 5)
+    expect(result.level).to eq '5'
+
+    result = opt.parse %w(--level=5)
+    expect(result.level).to eq '5'
+
+    result = opt.parse %w(-l 5)
+    expect(result.level).to eq '5'
+
+    result = opt.parse %w(-l5)
+    expect(result.level).to eq '5'
+  end
+
+  it 'should parse options with arguments' do
+    opt.option '--level, -l', nargs: 2..3
+
+    result = opt.parse %w(--level 5 6)
+    expect(result.level).to eq %w(5 6)
+
+    result = opt.parse %w(-l 5 6)
+    expect(result.level).to eq %w(5 6)
+  end
+
+  it 'should parse flags' do
     pending
 
     opt = Opt.new

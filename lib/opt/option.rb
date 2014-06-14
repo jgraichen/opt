@@ -21,13 +21,20 @@ module Opt
     #
     attr_reader :default
 
+    # Option value returned if switch is given.
+    #
+    # Will be ignored if option takes arguments.
+    #
+    attr_reader :value
+
     # Number of arguments as a range.
     #
     attr_reader :nargs
 
     def initialize(definition, options = {})
       @options  = options
-      @default  = options.fetch(:default, false)
+      @default  = options.fetch(:default, nil)
+      @value    = options.fetch(:value, true)
       @nargs    = Option.parse_nargs options.fetch(:nargs, 0)
 
       if definition.to_s =~ /\A[[:word:]]+\z/
@@ -87,15 +94,23 @@ module Opt
 
     def parse_args!(argv, result)
       if nargs.first == 0 && nargs.last == 0
-        result[name] = true
+        result[name] = value
       else
         args = []
-        while argv.any? && argv.first.text? && args.size < nargs.last
+        if argv.any? && argv.first.text?
+          while argv.any? && argv.first.text? && args.size < nargs.last
+            args << argv.shift.value
+          end
+        elsif argv.any? && argv.first.short?
           args << argv.shift.value
         end
 
         if nargs.include?(args.size)
-          result[name] = args
+          if nargs.first == 1 && nargs.last == 1
+            result[name] = args.first
+          else
+            result[name] = args
+          end
         else
           # raise Opt::MissingArgument
           raise "ArgumentError: wrong number of arguments (#{args.size} for #{nargs})"

@@ -168,7 +168,7 @@ describe Opt::Option do
         option.parse! argv = [t(:text, 'help')], result = {}
 
         expect(argv).to be_empty
-        expect(result).to eq 'test' => %w(help)
+        expect(result).to eq 'test' => 'help'
       end
 
       context 'with lower bound' do
