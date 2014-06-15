@@ -57,6 +57,15 @@ describe Opt do
     expect(result.level).to eq %w(5 6)
   end
 
+  it 'should parse options with argument & block' do
+    opt.option '--level, -l', nargs: 2..3 do |levels|
+      levels.map(&method(:Integer))
+    end
+
+    result = opt.parse %w(--level 5 6)
+    expect(result.level).to eq [5, 6]
+  end
+
   it 'should parse flags' do
     pending
 

@@ -11,8 +11,9 @@ module Opt
   end
 
   module Constants
-    Inf      = 1.0 / 0.0
-    Infinity = 1.0 / 0.0
+    Inf      = 1.0 / 0
+    Infinity = 1.0 / 0
+    Identity = ->(x){ x }
   end
 
   include Constants

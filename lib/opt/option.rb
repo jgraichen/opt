@@ -47,11 +47,16 @@ module Opt
     #
     attr_reader :nargs
 
-    def initialize(definition, options = {})
+    # Block for processing arguments.
+    #
+    attr_reader :block
+
+    def initialize(definition, options = {}, &block)
       @options  = options
       @default  = options.fetch(:default, nil)
       @value    = options.fetch(:value, true)
       @nargs    = Option.parse_nargs options.fetch(:nargs, 0)
+      @block    = block || Opt::Identity
 
       if definition.to_s =~ /\A[[:word:]]+\z/
         @switches = Set.new
@@ -124,9 +129,9 @@ module Opt
 
         if nargs.include?(args.size)
           if nargs == (1..1)
-            result[name] = args.first
+            result[name] = block.call args.first
           else
-            result[name] = args
+            result[name] = block.call args
           end
         else
           # raise Opt::MissingArgument

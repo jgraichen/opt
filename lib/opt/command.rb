@@ -74,8 +74,8 @@ module Opt
     # @api public
     # @see Option.new
     #
-    def option(definition = nil, opts = {})
-      option = Option.new(definition, opts)
+    def option(definition = nil, opts = {}, &block)
+      option = Option.new(definition, opts, &block)
 
       if commands.any?
         raise ArgumentError.new \

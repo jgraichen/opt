@@ -33,9 +33,10 @@ def t(type, value)
 end
 
 describe Opt::Option do
-  let(:option) { described_class.new(defin, {name: :test}.merge(opts)) }
+  let(:option) { described_class.new(defin, {name: :test}.merge(opts), &block) }
   let(:defin) { '' }
   let(:opts)  { {} }
+  let(:block) { Opt::Identity }
   subject { option }
 
   describe '.parse_nargs' do
