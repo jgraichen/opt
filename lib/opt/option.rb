@@ -79,7 +79,8 @@ module Opt
     end
 
     def collide?(option)
-      name == option.name || !switches.disjoint?(option.switches)
+      name == option.name ||
+      switches.any?{|s1| option.switches.any?{|s2| s1.eql?(s2) }}
     end
 
     def parse!(argv, result)
