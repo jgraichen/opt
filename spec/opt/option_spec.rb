@@ -113,6 +113,11 @@ describe Opt::Option do
       expect(option).to be_text
       expect(option.name).to eq 'file'
     end
+
+    it 'should raise error on invalid nargs on free-text' do
+      expect { described_class.new('file', nargs: 0) }.to \
+        raise_error(/A text option must consist of at least one argument/)
+    end
   end
 
   describe '#parse!' do

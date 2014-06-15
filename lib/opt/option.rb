@@ -57,7 +57,7 @@ module Opt
         @switches = Set.new
         @name     = options.fetch(:name, definition).to_s.freeze
 
-        unless nargs.first > 0 || nargs.size > 1
+        unless nargs.first > 0 || nargs.last > 0
           raise 'A text option must consist of at least one argument.'
         end
       else
