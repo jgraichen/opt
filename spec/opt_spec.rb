@@ -8,6 +8,9 @@ describe Opt do
 
     result = opt.parse %w(-h)
     expect(result.help).to eq :yes
+
+    result = opt.parse %w()
+    expect(result.help).to eq nil
   end
 
   it 'should detect double-dash' do

@@ -8,15 +8,15 @@ Gem::Specification.new do |spec|
   spec.version       = Opt::VERSION
   spec.authors       = ['Jan Graichen']
   spec.email         = ['jg@altimos.de']
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q(An option parsing library.)
+  spec.description   = %q(An option parsing library. Optional.)
   spec.homepage      = ''
-  spec.license       = 'MIT'
+  spec.license       = 'LGPLv3'
 
-  spec.files         = `git ls-files -z`.split("\x0")
+  spec.files         = Dir['**/*'].grep(%r{^((bin|lib|test|spec|features)/|.*\.gemspec|.*LICENSE.*|.*README.*|.*CHANGELOG.*)})
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ['lib']
+  spec.require_paths = %w(lib)
 
   spec.add_development_dependency 'bundler', '~> 1.5'
 end

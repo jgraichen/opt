@@ -1,6 +1,6 @@
 # Opt
 
-TODO: Write a gem description
+An option parsing library.
 
 ## Installation
 
@@ -18,12 +18,53 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Simply specify your options:
+
+```ruby
+opt = Opt.new
+opt.option '--help, -h'
+opt.option '--version, -v'
+
+result = opt.parse %w(-h)
+result.help? #=> true
+result.version? #=> nil
+```
+
+You can also specify subcommands, the number of arguments for a switch or a text option. You can further specify a custom name with the opts hash, otherwise the name of the first switch will be used.
+
+```ruby
+opt = Opt.new
+opt.command 'merge' do |cmd|
+  cmd.option '--out, -O', nargs: 1
+  cmd.option 'file', name: :files, nargs: '+'
+end
+
+result = opt.parse %w(merge --out out.txt file1.txt file2.txt)
+result.out #=> "out.txt"
+result.files #=> ["file1.txt", "file2.txt"]
+```
+
+Different styles are supported:
+
+```ruby
+opt = Opt.new
+opt.option '--level, -l', nargs: 1
+
+opt.parse(%w(--level 5)).level #=> "5"
+opt.parse(%w(--level=5)).level #=> "5"
+opt.parse(%w(-l 5)).level #=> "5"
+opt.parse(%w(-l5)).level #=> "5"
+```
+
+See API documentation and specs for more examples and configuration option.
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/opt/fork )
+1. Fork it (http://github.com/jgraichen/opt/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+3. Add specs so that I do not break your feature later.
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create new Pull Request
+
+## License
