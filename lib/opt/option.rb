@@ -110,7 +110,7 @@ module Opt
     end
 
     def parse_args!(argv, result)
-      if nargs.first == 0 && nargs.last == 0
+      if nargs == (0..0)
         result[name] = value
       else
         args = []
@@ -123,7 +123,7 @@ module Opt
         end
 
         if nargs.include?(args.size)
-          if nargs.first == 1 && nargs.last == 1
+          if nargs == (1..1)
             result[name] = args.first
           else
             result[name] = args
