@@ -58,6 +58,13 @@ opt.parse(%w(-l5)).level #=> "5"
 
 See API documentation and specs for more examples and configuration option.
 
+## ToDos
+
+* Argument type parsing
+* Option block argument processing
+* GNU Flags (--no-xy, --with/without-xy)
+* rc-file loading (?)
+
 ## Contributing
 
 1. Fork it (http://github.com/jgraichen/opt/fork)
