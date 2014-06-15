@@ -57,7 +57,6 @@ describe Opt do
   it 'should parse flags' do
     pending
 
-    opt = Opt.new
     opt.option :force, '-f, --force', default: false
     opt.option :quiet, '-q, --quiet', default: true
 
@@ -79,19 +78,22 @@ describe Opt do
   end
 
   it 'should parse subcommands (I)' do
-    pending
-
-    opt = Opt.new
-    opt.option :version, '-v, --version'
+    opt.option '--force, -f'
 
     opt.command :add, 'Add some things' do |cmd|
-      cmd.option :version, '-v, --version'
+      cmd.option '--verbose'
     end
 
-    result = opt.parse %w(-v add -v)
+    result = opt.parse %w(-f add --verbose)
 
-    expect(result[:version]).to eq true
-    expect(result.command.name).to eq :add
-    expect(result.command[:verbose]).to eq true
+    expect(result.force?).to eq true
+    expect(result.command.name).to eq 'add'
+    expect(result.command.verbose?).to eq true
+
+    result = opt.parse %w(add -f --verbose)
+
+    expect(result.force?).to eq true
+    expect(result.command.name).to eq 'add'
+    expect(result.command.verbose?).to eq true
   end
 end
