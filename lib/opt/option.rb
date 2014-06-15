@@ -3,21 +3,33 @@ module Opt
   # A command line option consisting of multiple switches,
   # possibly arguments and options about allowed numbers etc.
   #
+  # @api private
+  #
   class Option
     #
     # Option's name.
+    #
+    # @return [String] Frozen name string.
     #
     attr_reader :name
 
     # Set of switches triggering this option.
     #
+    # Avoid direct manipulation.
+    #
+    # @return [Set<Switch>] Set of switches.
+    #
     attr_reader :switches
 
     # Options passed to {#initialize}.
     #
+    # @return [Hash] Option hash.
+    #
     attr_reader :options
 
     # Option default value.
+    #
+    # @return [Object] Default value.
     #
     attr_reader :default
 
@@ -25,9 +37,13 @@ module Opt
     #
     # Will be ignored if option takes arguments.
     #
+    # @return [Object] Option value.
+    #
     attr_reader :value
 
     # Number of arguments as a range.
+    #
+    # @return [Range] Argument number range.
     #
     attr_reader :nargs
 
@@ -39,14 +55,14 @@ module Opt
 
       if definition.to_s =~ /\A[[:word:]]+\z/
         @switches = Set.new
-        @name     = options.fetch(:name, definition).to_s
+        @name     = options.fetch(:name, definition).to_s.freeze
 
         unless nargs.first > 0 || nargs.size > 1
           raise 'A text option must consist of at least one argument.'
         end
       else
         @switches = Switch.parse(definition)
-        @name     = options.fetch(:name, switches.first.name).to_s
+        @name     = options.fetch(:name, switches.first.name).to_s.freeze
       end
     end
 
