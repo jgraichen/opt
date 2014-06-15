@@ -102,12 +102,20 @@ describe Opt do
 
     opt.command :add, 'Add some things' do |cmd|
       cmd.option '-a'
+      cmd.option '-j', nargs: 1
     end
 
     result = opt.parse %w(add -af)
 
     expect(result.a?).to eq true
     expect(result.f?).to eq true
+    expect(result.command).to eq %w(add)
+
+    result = opt.parse %w(add -ajf)
+
+    expect(result.a?).to eq true
+    expect(result.f?).to eq nil
+    expect(result.j).to eq 'f'
     expect(result.command).to eq %w(add)
   end
 end
