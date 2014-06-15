@@ -35,7 +35,6 @@ module Opt
       @options  = options
       @default  = options.fetch(:default, nil)
       @value    = options.fetch(:value, true)
-      @global   = options.fetch(:global, true)
       @nargs    = Option.parse_nargs options.fetch(:nargs, 0)
 
       if definition.to_s =~ /\A[[:word:]]+\z/
@@ -49,14 +48,6 @@ module Opt
         @switches = Switch.parse(definition)
         @name     = options.fetch(:name, switches.first.name).to_s
       end
-    end
-
-    # Check if option is global.
-    #
-    # Free-text option cannot be global.
-    #
-    def global?
-      @global && switch?
     end
 
     # Check if option is triggered by at least on CLI switch.

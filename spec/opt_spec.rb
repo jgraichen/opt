@@ -87,13 +87,27 @@ describe Opt do
     result = opt.parse %w(-f add --verbose)
 
     expect(result.force?).to eq true
-    expect(result.command.name).to eq 'add'
-    expect(result.command.verbose?).to eq true
+    expect(result.verbose?).to eq true
+    expect(result.command).to eq %w(add)
 
     result = opt.parse %w(add -f --verbose)
 
     expect(result.force?).to eq true
-    expect(result.command.name).to eq 'add'
-    expect(result.command.verbose?).to eq true
+    expect(result.verbose?).to eq true
+    expect(result.command).to eq %w(add)
+  end
+
+  it 'should parse subcommands (II)' do
+    opt.option '-f'
+
+    opt.command :add, 'Add some things' do |cmd|
+      cmd.option '-a'
+    end
+
+    result = opt.parse %w(add -af)
+
+    expect(result.a?).to eq true
+    expect(result.f?).to eq true
+    expect(result.command).to eq %w(add)
   end
 end

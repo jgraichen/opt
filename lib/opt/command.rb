@@ -15,14 +15,34 @@ module Opt
     def initialize(name, opts = {})
       @name     = name.to_s
       @opts     = opts
-      @options  = Set.new
-      @commands = Set.new
+      @options  = []
+      @commands = []
     end
 
     # Register a new option.
     #
-    # @example
+    # @example An option named "help" triggered on "--help" or "-h"
     #   command.option '--help, -h'
+    #
+    # @example An option with exactly one argument
+    #   command.option '--level, -l', nargs: 1
+    #
+    # @example An option with 2 or more arguments
+    #   command.option '--files', nargs: [2, :inf]
+    #   command.option '--files', nargs: [2, :infinity]
+    #   command.option '--files', nargs: [2, '*']
+    #
+    # @example An option with 2 to 4 arguments and a specific name
+    #   command.option '--sum, -s, -a', nargs: (2..4), name: :accumulate
+    #
+    # @example An option with 0 or more arguments
+    #   command.option '-x', nargs: '*'
+    #
+    # @example An option with 1 or more arguments
+    #   command.option '-x', nargs: '+'
+    #
+    # @example A free-text option
+    #   command.option 'file', name: :files, nargs: '*'
     #
     # @see Option.new
     #
@@ -71,46 +91,30 @@ module Opt
     #   Defaults to {ARGV}.
     #
     def parse(argv = ARGV)
-      parse_argv! parse_tokens argv
+      result = Result.new
+      result.merge! defaults
+
+      parse_argv! parse_tokens(argv), result
+
+      result
     end
 
-    def parse_argv!(argv)
-      result = defaults
-
-      parse_global_options!(argv, result)
+    def parse_argv!(argv, result, options = [])
+      options += self.options
 
       while argv.any?
-        next if options.any?{|option| option.parse!(argv, result) }
+        next if options.any?{|o| o.parse!(argv, result) }
 
         if argv.first.text?
           if (cmd = commands.find{|c| c.name == argv.first.value })
-            argv.shift
-            rst = cmd.parse_argv!(argv)
-
-            return Result.new(name, result, rst)
+            result.command << argv.shift.value
+            cmd.parse_argv!(argv, result, options)
+            next
           end
         end
 
         raise "Unknown option (#{argv.first.type}): #{argv.first}"
       end
-
-      Result.new(name, result)
-    end
-
-    # Parse tokens from everywhere if option is global.
-    #
-    def parse_global_options!(argv, result)
-      passed = []
-
-      while argv.any?
-        next if options.any? do |option|
-          option.global? && option.parse!(argv, result)
-        end
-
-        passed << argv.shift
-      end
-
-      passed.each{|a| argv << a }
     end
 
     def parse_tokens(argv)
@@ -130,20 +134,27 @@ module Opt
       tokens
     end
 
-    class Result
-      attr_reader :data, :name, :command
+    class Result < Hash
+      attr_reader :command
 
-      def initialize(name, data, command = nil)
-        @data    = data
-        @name    = name
-        @command = command
+      def initialize
+        @command = []
+        super
+      end
 
-        (class << self; self end).tap do |ec|
-          data.each_pair do |key, value|
-            next if respond_to?(key.to_s) || respond_to?("#{key}?")
-            ec.send(:define_method, key.to_s)  { value }
-            ec.send(:define_method, "#{key}?") { value }
-          end
+      def respond_to_missing?(mth)
+        if mth =~ /^(\w)\??$/ && key?($1)
+          true
+        else
+          super
+        end
+      end
+
+      def method_missing(mth, *args, &block)
+        if mth =~ /^(\w+)\??$/ && key?($1) && args.empty? && block.nil?
+          fetch $1
+        else
+          super
         end
       end
     end
