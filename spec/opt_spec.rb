@@ -15,7 +15,7 @@ describe Opt do
 
   it 'should detect double-dash' do
     opt.option '-v', name: :version
-    opt.option 'rest', nargs: '+'
+    opt.option 'rest', nargs: 1..Opt::Inf
 
     result = opt.parse %w(-v -- -h)
     expect(result.version?).to be true

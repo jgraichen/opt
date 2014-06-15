@@ -9,6 +9,9 @@ module Opt
   def self.new
     Program.new.tap{|p| yield p if block_given? }
   end
+
+  Inf      = 1.0 / 0.0
+  Infinity = 1.0 / 0.0
 end
 
 #   #

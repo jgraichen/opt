@@ -57,7 +57,7 @@ module Opt
         @switches = Set.new
         @name     = options.fetch(:name, definition).to_s.freeze
 
-        unless nargs.first > 0 || nargs.last > 0
+        unless nargs.min > 0 || nargs.max > 0
           raise 'A text option must consist of at least one argument.'
         end
       else
@@ -115,7 +115,7 @@ module Opt
       else
         args = []
         if argv.any? && argv.first.text?
-          while argv.any? && argv.first.text? && args.size < nargs.last
+          while argv.any? && argv.first.text? && args.size < nargs.max
             args << argv.shift.value
           end
         elsif argv.any? && argv.first.short?
@@ -139,59 +139,22 @@ module Opt
       def parse_nargs(num)
         case num
           when Range
-            parse_nargs_range(num)
-          when Array
-            parse_nargs_array(num)
+            if num.min && num.max
+              if num.min >= 0
+                num
+              else
+                raise ArgumentError.new \
+                  'Argument number must not be less than zero.'
+              end
+            else
+              raise ArgumentError.new \
+                'Range must be ordered.'
+            end
+          when Numeric
+            parse_nargs num..num
           else
-            parse_nargs_obj(num)
-        end
-      end
-
-      def parse_nargs_obj(obj)
-        case obj.to_s.downcase
-          when '+'
-            1..Float::INFINITY
-          when '*', 'inf', 'infinity'
-            0..Float::INFINITY
-          else
-            i = Integer(obj.to_s)
-            parse_nargs_range i..i
-        end
-      end
-
-      def parse_nargs_range(range)
-        if range.first > range.last
-          if range.exclude_end?
-            range = Range.new(range.last + 1, range.first)
-          else
-            range = Range.new(range.last, range.first)
-          end
-        end
-
-        if range.first < 0
-          raise RuntimeError.new 'Argument number must not be less than zero.'
-        end
-
-        range
-      end
-
-      def parse_nargs_array(obj)
-        if obj.size == 2
-          parse_nargs_range Range.new(parse_nargs_array_obj(obj[0]),
-                                      parse_nargs_array_obj(obj[1]))
-        else
-
-          raise ArgumentError.new \
-            'Argument number array count must be exactly two.'
-        end
-      end
-
-      def parse_nargs_array_obj(obj)
-        case obj.to_s.downcase
-          when '*', 'inf', 'infinity'
-            Float::INFINITY
-          else
-            Integer(obj.to_s)
+            i = Integer(num.to_s)
+            parse_nargs i..i
         end
       end
     end

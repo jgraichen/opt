@@ -36,7 +36,7 @@ You can also specify subcommands, the number of arguments for a switch or a text
 opt = Opt.new
 opt.command 'merge' do |cmd|
   cmd.option '--out, -O', nargs: 1
-  cmd.option 'file', name: :files, nargs: '+'
+  cmd.option 'file', name: :files, nargs: 0..Opt::Infinity
 end
 
 result = opt.parse %w(merge --out out.txt file1.txt file2.txt)
