@@ -1,6 +1,9 @@
 require 'rspec'
 
 if ENV['CI'] || ENV['COVERAGE']
+  require "codeclimate-test-reporter"
+  CodeClimate::TestReporter.start
+
   require 'coveralls'
   Coveralls.wear! do
     add_filter 'spec'
