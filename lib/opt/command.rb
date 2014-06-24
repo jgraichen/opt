@@ -160,7 +160,7 @@ module Opt
       result = Result.new
       result.merge! defaults
 
-      parse_argv! parse_tokens(argv), result
+      parse_argv! parse_tokens(argv.dup), result
 
       result
     end
