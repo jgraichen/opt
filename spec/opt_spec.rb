@@ -100,13 +100,14 @@ describe Opt do
 
     expect(result.force?).to eq true
     expect(result.verbose?).to eq true
-    expect(result.command).to eq %w(add)
+    expect(result.command.first).to be_a Opt::Command
+    expect(result.command.map(&:name)).to eq %w(add)
 
     result = opt.parse %w(add -f --verbose)
 
     expect(result.force?).to eq true
     expect(result.verbose?).to eq true
-    expect(result.command).to eq %w(add)
+    expect(result.command.map(&:name)).to eq %w(add)
   end
 
   it 'should parse subcommands (II)' do
@@ -121,13 +122,13 @@ describe Opt do
 
     expect(result.a?).to eq true
     expect(result.f?).to eq true
-    expect(result.command).to eq %w(add)
+    expect(result.command.map(&:name)).to eq %w(add)
 
     result = opt.parse %w(add -ajf)
 
     expect(result.a?).to eq true
     expect(result.f?).to eq nil
     expect(result.j).to eq 'f'
-    expect(result.command).to eq %w(add)
+    expect(result.command.map(&:name)).to eq %w(add)
   end
 end

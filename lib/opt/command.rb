@@ -175,7 +175,8 @@ module Opt
 
         if argv.first.text?
           if (cmd = commands.find{|c| c.name == argv.first.value })
-            result.command << argv.shift.value
+            argv.shift
+            result.command << cmd
             cmd.parse_argv!(argv, result, options)
             next
           end
