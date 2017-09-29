@@ -1,11 +1,9 @@
 language: ruby
 bundler_args: "--without development"
 rvm:
-- '2.1'
-- '2.0'
-- 1.9.3
-- jruby
-- rbx-2
+- '2.4.2'
+- '2.3.5'
+- '2.2.8'
 addons:
    code_climate:
      repo_token: fbb63d5c48f48c4a4b9abfa388642d2299d5df9a5766c3445d9ddd34d6877afa
