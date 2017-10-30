@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Opt
   #
   # A command line option consisting of multiple switches,
@@ -58,7 +60,7 @@ module Opt
       @nargs    = Option.parse_nargs options.fetch(:nargs, 0)
       @block    = block || Opt::Identity
 
-      if definition.to_s =~ /\A[[:word:]]+\z/
+      if definition.to_s.match?(/\A[[:word:]]+\z/)
         @switches = Set.new
         @name     = options.fetch(:name, definition).to_s.freeze
 
@@ -85,7 +87,7 @@ module Opt
 
     def collide?(option)
       name == option.name ||
-      switches.any?{|s1| option.switches.any?{|s2| s1.eql?(s2) }}
+        switches.any? {|s1| option.switches.any? {|s2| s1.eql?(s2) } }
     end
 
     def parse!(argv, result)
@@ -128,11 +130,11 @@ module Opt
         end
 
         if nargs.include?(args.size)
-          if nargs == (1..1)
-            result[name] = block.call args.first
-          else
-            result[name] = block.call args
-          end
+          result[name] = if nargs == (1..1)
+                           block.call args.first
+                         else
+                           block.call args
+                         end
         else
           # raise Opt::MissingArgument
           raise "wrong number of arguments (#{args.size} for #{nargs})"

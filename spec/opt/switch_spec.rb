@@ -1,4 +1,6 @@
-# encoding: utf-8
+
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Opt::Switch do
@@ -54,7 +56,7 @@ describe Opt::Switch do
       it 'should parse to Set' do
         expect(subject).to be_a Set
         expect(subject.size).to eq 2
-        expect(subject.map(&:name)).to match_array %w(h help)
+        expect(subject.map(&:name)).to match_array %w[h help]
       end
     end
   end

@@ -1,4 +1,6 @@
-# encoding: utf-8
+
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec::Matchers.define :parse do |*expected|
@@ -87,7 +89,7 @@ describe Opt::Option do
     it 'should parse switches' do
       option = described_class.new('-h, --help')
       expect(option.switches.size).to eq 2
-      expect(option.switches.each.map(&:name)).to match_array %w(h help)
+      expect(option.switches.each.map(&:name)).to match_array %w[h help]
     end
 
     it 'should parse free-text arg' do
@@ -193,7 +195,7 @@ describe Opt::Option do
           option.parse! argv = [t(:text, 'a'), t(:text, 'b')], result = {}
 
           expect(argv).to be_empty
-          expect(result).to eq 'test' => %w(a b)
+          expect(result).to eq 'test' => %w[a b]
         end
       end
 
@@ -201,19 +203,19 @@ describe Opt::Option do
         let(:opts) { {nargs: 0..2} }
 
         it 'should eat arguments up to upper bound' do
-          option.parse! argv   = [t(:text, 'a'), t(:text, 'b'), t(:text, 'c')],
-                        result = {}
+          option.parse! argv = [t(:text, 'a'), t(:text, 'b'), t(:text, 'c')],
+            result = {}
 
           expect(argv).to eq [t(:text, 'c')]
-          expect(result).to eq 'test' => %w(a b)
+          expect(result).to eq 'test' => %w[a b]
         end
 
         it 'should eat less arguments if there are less tokens' do
           option.parse! argv = [t(:text, 'a'), t(:short, 'b'), t(:text, 'c')],
-                        result = {}
+            result = {}
 
           expect(argv).to eq [t(:short, 'b'), t(:text, 'c')]
-          expect(result).to eq 'test' => %w(a)
+          expect(result).to eq 'test' => %w[a]
         end
       end
     end

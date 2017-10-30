@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec'
 
 if ENV['CI'] || ENV['COVERAGE']

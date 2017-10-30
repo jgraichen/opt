@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 
 module Opt
@@ -82,7 +84,7 @@ module Opt
           'Can only have subcommands OR free-text arguments.'
       end
 
-      if (opt = options.find{|o| o.collide?(option) })
+      if (opt = options.find {|o| o.collide?(option) })
         raise "Option `#{definition}' collides with already " \
               "registered option: #{opt}"
       else
@@ -115,15 +117,16 @@ module Opt
     # @api public
     # @see Opt::Command#initialize
     #
+    # rubocop:disable AbcSize
     def command(name, opts = {})
-      if options.any?{|o| o.text? }
+      if options.any?(&:text?)
         raise ArgumentError.new \
           'Can only have subcommands OR free-text arguments.'
       end
 
       command = Command.new(name, opts)
 
-      if commands.any?{|c| c.name == command.name }
+      if commands.any? {|c| c.name == command.name }
         raise ArgumentError.new "Command `#{command.name}' already registered."
       end
 
@@ -132,6 +135,7 @@ module Opt
       commands << command
       command
     end
+    # rubocop:enable all
 
     # Return hash with default values for all options.
     #
@@ -140,7 +144,7 @@ module Opt
     # @api private
     #
     def defaults
-      Hash[options.map{|o| [o.name, o.default] }]
+      Hash[options.map {|o| [o.name, o.default] }]
     end
 
     # Parses given list of command line tokens.
@@ -171,10 +175,10 @@ module Opt
       options += self.options
 
       while argv.any?
-        next if options.any?{|o| o.parse!(argv, result) }
+        next if options.any? {|o| o.parse!(argv, result) }
 
         if argv.first.text?
-          if (cmd = commands.find{|c| c.name == argv.first.value })
+          if (cmd = commands.find {|c| c.name == argv.first.value })
             argv.shift
             result.command << cmd
             cmd.parse_argv!(argv, result, options)
@@ -192,7 +196,7 @@ module Opt
       tokens = []
       argv.each_with_index do |arg, index|
         if arg == '--'
-          return tokens + argv[index + 1..-1].map{|a| Token.new(:text, a) }
+          return tokens + argv[index + 1..-1].map {|a| Token.new(:text, a) }
         elsif arg[0..1] == '--'
           tokens << Token.new(:long, arg[2..-1])
         elsif arg[0] == '-'
@@ -235,7 +239,7 @@ module Opt
       # @api private
       #
       def respond_to_missing?(mth)
-        if mth =~ /^(\w)\??$/ && key?($1)
+        if mth =~ /^(\w)\??$/ && key?(Regexp.last_match(1))
           true
         else
           super
@@ -245,8 +249,8 @@ module Opt
       # @api private
       #
       def method_missing(mth, *args, &block)
-        if mth =~ /^(\w+)\??$/ && key?($1) && args.empty? && block.nil?
-          fetch $1
+        if mth =~ /^(\w+)\??$/ && key?(Regexp.last_match(1)) && args.empty? && block.nil?
+          fetch Regexp.last_match(1)
         else
           super
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'set'
 
 module Opt
@@ -42,7 +44,7 @@ module Opt
       private
 
       def parse_str(str)
-        Set.new str.split(/\s*,\s*/).map{|s| new s }
+        Set.new str.split(/\s*,\s*/).map {|s| new s }
       end
     end
 
@@ -57,16 +59,16 @@ module Opt
       match = REGEXP.match(str)
       raise "Invalid command line switch: #{str.inspect}" unless match
 
-      @name  = match[:name].freeze
+      @name = match[:name].freeze
 
-      case match[:dash].to_s.size
-        when 0
-          @short = name.size == 1
-        when 1
-          @short = true
-        else
-          @short = false
-      end
+      @short = case match[:dash].to_s.size
+                 when 0
+                   name.size == 1
+                 when 1
+                   true
+                 else
+                   false
+               end
     end
 
     def short?
